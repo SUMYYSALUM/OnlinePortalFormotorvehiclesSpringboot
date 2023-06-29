@@ -42,6 +42,11 @@ public class MotorvehicleController {
 
 
 
+    // api ya kuwahesabu motorvehicles
+    @GetMapping("/motorvehicle/count")
+    public int countMotorvehicles(){
+        return motorvehicleRepository.findAll().size();
+    }
 
     @GetMapping("/motorvehicle/{id}")
     public Optional<Motorvehicle> viewMotorVehicleById(@PathVariable int id){

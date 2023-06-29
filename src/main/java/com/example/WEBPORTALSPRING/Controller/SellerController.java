@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.example.WEBPORTALSPRING.Model.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +28,12 @@ import com.example.WEBPORTALSPRING.Repository.SellerRepository;
 public class SellerController {
     @Autowired
     private SellerRepository sellerRepository;
+
+     // api ya kuwahesabu sellers
+    @GetMapping("/seller/count")
+    public int countSellers(){
+        return sellerRepository.findAll().size();
+    }
 
     @GetMapping("/seller/{id}")
     public Optional<Seller> viewSellerById(@PathVariable int id){
@@ -75,6 +83,16 @@ public class SellerController {
         response.put("Seller deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
      }
+
+    @PostMapping("/seller/login")
+    public ResponseEntity<?> sellerLogin(@RequestBody Seller seller){
+        Seller seller1 = sellerRepository.getSellerByEmail(seller.getEmail());
+        if(seller1.getPassword().equals(seller.getPassword())){
+            return ResponseEntity.ok(seller1);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
 
 
 

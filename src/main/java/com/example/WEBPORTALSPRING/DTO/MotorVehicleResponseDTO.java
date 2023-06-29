@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MotorVehicleResponseDTO {
+    private int motorvehicleId;
     private String Identificationnumber;
     private String Interiorcolor;
     private String Extiriorcolor;

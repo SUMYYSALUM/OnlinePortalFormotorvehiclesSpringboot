@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.example.WEBPORTALSPRING.Model.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +34,12 @@ public class CustomerController {
     @GetMapping("/customer/{id}")
     public Optional<Customer> viewCustomerById(@PathVariable int id){
         return customerRepository.findById(id);
+    }
+
+    // api ya kuwahesabu customer
+    @GetMapping("/customer/count")
+    public int countCustomers(){
+        return customerRepository.findAll().size();
     }
 
     // api ya kuview table la customer
@@ -77,6 +85,16 @@ public class CustomerController {
         response.put("Customer seleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
      }
+
+
+    @PostMapping("/customer/login")
+    public ResponseEntity<?> customerLogin(@RequestBody Customer customer){
+        Customer customer1 = customerRepository.getCustomerByEmail(customer.getEmail());
+        if(customer1.getPassword().equals(customer.getPassword())){
+            return ResponseEntity.ok(customer1);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
 
 
 

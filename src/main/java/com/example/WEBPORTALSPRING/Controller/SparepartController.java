@@ -40,6 +40,12 @@ public class SparepartController {
     @Autowired
     private ModelMapper modelMapper;
 
+     // api ya kuwahesabu sparepart
+    @GetMapping("/sparepart/count")
+    public int countSpareparts(){
+        return sparepartRepository.findAll().size();
+    }
+
     @GetMapping("/sparepart/{id}")
     public Optional<Sparepart> viewSparepartById(@PathVariable int id){
         return sparepartRepository.findById(id);
