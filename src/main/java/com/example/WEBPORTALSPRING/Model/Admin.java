@@ -14,6 +14,7 @@ public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int adminId;
+    private String profilePic;
     private String firstname;
     private String lastname;
     private String username;

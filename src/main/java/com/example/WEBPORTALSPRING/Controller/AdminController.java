@@ -54,8 +54,6 @@ public class AdminController {
         
             findAdmin.setFirstname(admin.getFirstname());
             findAdmin.setLastname(admin.getLastname());
-            findAdmin.setUsername(admin.getUsername());
-            findAdmin.setEmail(admin.getEmail());
             findAdmin.setPhonenumber(admin.getPhonenumber());
             findAdmin.setPassword(admin.getPassword());
             findAdmin.setAddress(admin.getAddress());

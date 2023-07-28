@@ -18,6 +18,7 @@ public class Seller {
     @ Id
     @ GeneratedValue(strategy = GenerationType.AUTO)
     private int sellerId;
+    private String profilePic;
     private String firstName;
     private String lastName;
     private String username;

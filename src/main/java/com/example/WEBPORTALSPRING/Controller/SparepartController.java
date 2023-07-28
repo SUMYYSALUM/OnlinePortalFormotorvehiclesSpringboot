@@ -89,12 +89,11 @@ public class SparepartController {
          .orElseThrow(()-> new ResourceNotFoundException("invalid Id"));
 
         
-            findSparepart.setPartname(sparepart.getPartname());
-            findSparepart.setLocation(sparepart.getLocation());
+            findSparepart.setPartName(sparepart.getPartName());
             findSparepart.setPrice(sparepart.getPrice());
-            findSparepart.setPartdescription(sparepart.getPartdescription());
-            findSparepart.setMotorvehiclemodel(sparepart.getMotorvehiclemodel());
-            findSparepart.setMotorvehiclemake(sparepart.getMotorvehiclemake());
+            findSparepart.setDescription(sparepart.getDescription());
+            findSparepart.setMotorModel(sparepart.getMotorModel());
+            findSparepart.setMotorMake(sparepart.getMotorMake());
     
 
             Sparepart sparepart2= sparepartRepository.save(findSparepart);
@@ -102,6 +101,7 @@ public class SparepartController {
          
    
      }
+
      @DeleteMapping("/sparepart/{id}")
      public ResponseEntity<Map<String, Boolean>> deleteSpareparts(@PathVariable int id){
         Sparepart sparepart = sparepartRepository.findById(id)
@@ -112,6 +112,17 @@ public class SparepartController {
         response.put("Sparepart seleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
      }
+
+    @GetMapping("/sparepart/seller/{id}")
+    public List<SparepartRequestDTO> getSparepartBySellerId(@PathVariable int id){
+        List<SparepartRequestDTO> list = new ArrayList<>();
+        for(Sparepart sparepart:sparepartRepository.getBySellerId(id)){
+            SparepartRequestDTO sparepartRequestDTO = modelMapper.map(sparepart, SparepartRequestDTO.class);
+            sparepartRequestDTO.setSellerId(sparepart.getSeller().getSellerId());
+            list.add(sparepartRequestDTO);
+        }
+        return list;
+    }
 
   
 }

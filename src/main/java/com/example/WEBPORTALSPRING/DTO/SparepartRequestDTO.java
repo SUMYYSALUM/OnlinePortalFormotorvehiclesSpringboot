@@ -5,12 +5,12 @@ import lombok.Data;
 @Data
 public class SparepartRequestDTO {
         private int sellerId;
-        private int sparepartId;
-        private String Partname;
-        private String Location;
-        private String Price;
-        private String Partdescription;
-        private String Motorvehiclemodel;
-        private String motorvehiclemake;
-    
+        private int partId;
+        private String partPic;
+        private String partName;
+        private String price;
+        private String description;
+        private String motorModel;
+        private String motorMake;
+
 }

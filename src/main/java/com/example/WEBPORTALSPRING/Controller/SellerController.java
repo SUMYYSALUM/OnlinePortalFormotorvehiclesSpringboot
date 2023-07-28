@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.example.WEBPORTALSPRING.Model.Customer;
+import com.example.WEBPORTALSPRING.DTO.SellerRequestDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,9 @@ import com.example.WEBPORTALSPRING.Repository.SellerRepository;
 public class SellerController {
     @Autowired
     private SellerRepository sellerRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
      // api ya kuwahesabu sellers
     @GetMapping("/seller/count")
@@ -52,28 +56,24 @@ public class SellerController {
         return sellerRepository.save(seller);
     }
 
-     @PutMapping("/seller/{id}")
-     public ResponseEntity<?> updateUser(@PathVariable("id") int id, @RequestBody Seller seller) {
-         Seller findSeller = sellerRepository.findById(id)
-         .orElseThrow(()-> new ResourceNotFoundException("invalid Id"));
+    @PutMapping("/seller/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable("id") int id, @RequestBody SellerRequestDTO sellerDTO) {
+        Seller findSeller = sellerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid Id"));
 
-             findSeller.setFirstName(seller.getFirstName());
-             findSeller.setLastName(seller.getLastName());
-             findSeller.setUsername(seller.getUsername());
-             findSeller.setEmail(seller.getEmail());
-             findSeller.setPhonenumber(seller.getPhonenumber());
-             findSeller.setPassword(seller.getPassword());
-             findSeller.setRegion(seller.getRegion());
-             findSeller.setDistrict(seller.getDistrict());
-             findSeller.setWard(seller.getWard());
+        // Check if the provided old password matches the current password
+        if (!findSeller.getPassword().matches(sellerDTO.getOldPassword())) {
+            throw new IllegalArgumentException("Incorrect old password");
+        }
 
-             
-             Seller seller2= sellerRepository.save(findSeller);
-             return ResponseEntity.ok(seller2);
-         
-     }
+        // Perform data mapping using ModelMapper
+        modelMapper.map(sellerDTO, findSeller);
 
-     @DeleteMapping("/seller/{id}")
+        Seller updatedSeller = sellerRepository.save(findSeller);
+        return ResponseEntity.ok(updatedSeller);
+    }
+
+    @DeleteMapping("/seller/{id}")
      public ResponseEntity<Map<String, Boolean>> deleteSeller(@PathVariable int id){
         Seller seller = sellerRepository.findById(id)
         .orElseThrow(()-> new ResourceNotFoundException("Invalid id"));
@@ -84,6 +84,7 @@ public class SellerController {
         return ResponseEntity.ok(response);
      }
 
+
     @PostMapping("/seller/login")
     public ResponseEntity<?> sellerLogin(@RequestBody Seller seller){
         Seller seller1 = sellerRepository.getSellerByEmail(seller.getEmail());
@@ -92,10 +93,5 @@ public class SellerController {
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-
-
-
-
-
 
 }

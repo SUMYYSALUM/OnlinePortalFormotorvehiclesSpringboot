@@ -3,18 +3,19 @@ package com.example.WEBPORTALSPRING.DTO;
 import lombok.Data;
 
 @Data
-public class MotorVehicleResponseDTO {
-    private int motorvehicleId;
-    private String Identificationnumber;
-    private String Interiorcolor;
-    private String Extiriorcolor;
-    private String Fueltype;
-    private String Transmissiontype;
+public class MotorResponseDTO {
+    private int motorId;
+    private String motorPic;
+    private String identification;
+    private String interiorColor;
+    private String exteriorColor;
+    private String fuelType;
+    private String transmissionType;
     private String motorCondition;
     private String motorPrice;
     private String motorMileage;
-    private String motorMake;
     private String motorMade;
+    private String motorModel;
     private String releaseYear;
 
     private int sellerId;

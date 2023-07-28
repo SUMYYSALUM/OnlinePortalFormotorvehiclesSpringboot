@@ -62,8 +62,6 @@ public class CustomerController {
         
             findCustomer.setFirstname(customer.getFirstname());
             findCustomer.setLastname(customer.getLastname());
-            findCustomer.setUsername(customer.getUsername());
-            findCustomer.setEmail(customer.getEmail());
             findCustomer.setPhonenumber(customer.getPhonenumber());
             findCustomer.setPassword(customer.getPassword());
             findCustomer.setRegion(customer.getRegion());
@@ -82,7 +80,7 @@ public class CustomerController {
         customerRepository.delete(customer);
 
         Map<String,Boolean> response = new HashMap<>();
-        response.put("Customer seleted", Boolean.TRUE);
+        response.put("Customer deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
      }
 
