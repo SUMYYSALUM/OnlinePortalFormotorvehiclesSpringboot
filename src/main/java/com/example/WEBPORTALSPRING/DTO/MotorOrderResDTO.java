@@ -1,10 +1,19 @@
 package com.example.WEBPORTALSPRING.DTO;
 
+import java.time.LocalDate;
+
 import lombok.Data;
 
 @Data
-public class MotorResponseDTO {
-    private int motorId;
+public class MotorOrderResDTO {
+
+    
+    private int motorOrderId;
+
+    private LocalDate orderDate;
+    private int quantity;
+    private long amount;
+
     private String motorPic;
     private String motorName;
     private String identification;
@@ -14,16 +23,12 @@ public class MotorResponseDTO {
     private String transmissionType;
     private String motorCondition;
     private String motorPrice;
-    private String motorMileage;
-    private String motorMade;
-    private String motorModel;
-    private String releaseYear;
 
-    private int sellerId;
-    private String firstName;
-    private String lastName;
+    private int customerId;
+    private String firstname;
+    private String lastname;
     private String region;
     private String district;
     private String ward;
-
+    
 }

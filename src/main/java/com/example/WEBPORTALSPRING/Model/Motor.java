@@ -18,6 +18,7 @@ public class Motor {
 
     private int motorId;
     private String motorPic;
+    private String motorName;
     private String identification;
     private String interiorColor;
     private String exteriorColor;

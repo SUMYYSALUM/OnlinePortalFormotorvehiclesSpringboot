@@ -48,6 +48,12 @@ public class MotorController {
         return motorRepository.findAll().size();
     }
 
+    // api ya kuhesabu motorvehicles
+    @GetMapping("/motorvehicle/seller/count/{id}")
+    public int countSellerMotorvehicles(@PathVariable int id){
+        return motorRepository.getBySellerId(id).size();
+    }
+
     @GetMapping("/motorvehicle/{id}")
     public Optional<Motor> viewMotorVehicleById(@PathVariable int id){
         return motorRepository.findById(id);
@@ -117,7 +123,8 @@ public class MotorController {
         return ResponseEntity.ok(response);
      }
 
-      @GetMapping("/motorvehicle/seller/{id}")
+    
+     @GetMapping("/motorvehicle/seller/{id}")
     public List<MotorRequestDTO> getMotorBySellerId(@PathVariable int id){
         List<MotorRequestDTO> list = new ArrayList<>();
         for(Motor motor:motorRepository.getBySellerId(id)){

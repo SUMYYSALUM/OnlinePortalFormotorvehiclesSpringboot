@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.WEBPORTALSPRING.DTO.AdminRequestDTO;
+import com.example.WEBPORTALSPRING.DTO.SellerRequestDTO;
 import com.example.WEBPORTALSPRING.Exceptions.ResourceNotFoundException;
 import com.example.WEBPORTALSPRING.Model.Admin;
 import com.example.WEBPORTALSPRING.Model.Customer;
+import com.example.WEBPORTALSPRING.Model.Seller;
 import com.example.WEBPORTALSPRING.Repository.AdminRepository;
 
 @CrossOrigin
@@ -30,6 +34,9 @@ import com.example.WEBPORTALSPRING.Repository.AdminRepository;
 public class AdminController {
     @Autowired
     private AdminRepository adminRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @GetMapping("/admin/{id}")
     public Optional<Admin> viewAdminById(@PathVariable int id){
@@ -46,22 +53,23 @@ public class AdminController {
  public Admin addAdmin(@RequestBody Admin admin){
      return adminRepository.save(admin);
  }
- @PutMapping("/admin/{id}")
-     public ResponseEntity<?> updateUser(@PathVariable("id") int id, @RequestBody Admin admin) {
-         Admin findAdmin = adminRepository.findById(id)
-         .orElseThrow(()-> new ResourceNotFoundException("invalid Id"));
+ 
+     @PutMapping("/admin/{id}")
+    public ResponseEntity<?> updateAdmin(@PathVariable("id") int id, @RequestBody AdminRequestDTO adminDTO) {
+        Admin findAdmin = adminRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid Id"));
 
-        
-            findAdmin.setFirstname(admin.getFirstname());
-            findAdmin.setLastname(admin.getLastname());
-            findAdmin.setPhonenumber(admin.getPhonenumber());
-            findAdmin.setPassword(admin.getPassword());
-            findAdmin.setAddress(admin.getAddress());
+        // Check if the provided old password matches the current password
+        if (!findAdmin.getPassword().matches(adminDTO.getOldpassword())) {
+            throw new IllegalArgumentException("Incorrect old password");
+        }
 
-            Admin admin2= adminRepository.save(findAdmin);
-            return ResponseEntity.ok(admin2);
-         
-     }
+        // Perform data mapping using ModelMapper
+        modelMapper.map(adminDTO, findAdmin);
+
+        Admin updatedAdmin = adminRepository.save(findAdmin);
+        return ResponseEntity.ok(updatedAdmin);
+    }
 
      @DeleteMapping("/admin/{id}")
      public ResponseEntity<Map<String, Boolean>> deleteAdmin(@PathVariable int id){

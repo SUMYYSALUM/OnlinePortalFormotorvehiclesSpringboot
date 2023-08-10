@@ -46,6 +46,12 @@ public class SparepartController {
         return sparepartRepository.findAll().size();
     }
 
+     // api ya kuhesabu sparepart
+    @GetMapping("/sparepart/seller/count/{id}")
+    public int countSellerSpareparts(@PathVariable int id){
+        return sparepartRepository.getBySellerId(id).size();
+    }
+
     @GetMapping("/sparepart/{id}")
     public Optional<Sparepart> viewSparepartById(@PathVariable int id){
         return sparepartRepository.findById(id);
