@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.WEBPORTALSPRING.DTO.MotorOrderReq;
-import com.example.WEBPORTALSPRING.DTO.MotorOrderResDTO;
+import com.example.WEBPORTALSPRING.DTO.SpareOrderReqDTO;
+import com.example.WEBPORTALSPRING.DTO.SpareOrderResDTO;
 import com.example.WEBPORTALSPRING.DTO.SpareOrderReqDTO;
 import com.example.WEBPORTALSPRING.DTO.SpareOrderResDTO;
 import com.example.WEBPORTALSPRING.Model.Customer;
 import com.example.WEBPORTALSPRING.Model.Motor;
-import com.example.WEBPORTALSPRING.Model.MotorOrder;
+import com.example.WEBPORTALSPRING.Model.SpareOrder;
 import com.example.WEBPORTALSPRING.Model.SpareOrder;
 import com.example.WEBPORTALSPRING.Model.Sparepart;
-import com.example.WEBPORTALSPRING.Repository.MotorOrderRepository;
+import com.example.WEBPORTALSPRING.Repository.SpareOrderRepository;
 import com.example.WEBPORTALSPRING.Repository.MotorRepository;
 import com.example.WEBPORTALSPRING.Repository.SpareOrderRepository;
 import com.example.WEBPORTALSPRING.Repository.SparepartRepository;
@@ -48,21 +48,24 @@ public class SpareOrderController {
     private ModelMapper modelMapper;
 
     @PostMapping("/spare-order")
-    public SpareOrder makeSpareOrder(@RequestBody SpareOrderReqDTO spareOrderReqDTO) {
+public SpareOrder makeSpareOrder(@RequestBody SpareOrderReqDTO spareOrderReqDTO) {
+    Customer customer = new Customer();
+    customer.setCustomerId(spareOrderReqDTO.getCustomerId());
 
-        Customer customer = new Customer();
-        customer.setCustomerId(spareOrderReqDTO.getCustomerId());
+    Sparepart sparepart = sparepartRepository.findById(spareOrderReqDTO.getPartId())
+            .orElseThrow(() -> new IllegalArgumentException("Motor not found"));
 
-        Sparepart sparepart = new Sparepart();
-        sparepart.setPartId(spareOrderReqDTO.getPartId());
+    long price = sparepart.getPrice();
+    long quantity = spareOrderReqDTO.getQuantity();
 
-        SpareOrder spareOrder = modelMapper.map(spareOrderReqDTO, SpareOrder.class);
-
-        spareOrder.setCustomer(customer);
-        spareOrder.setSparepart(sparepart);
-
-        return spareOrderRepository.save(spareOrder);
-    }
+    long totalAmount = price * quantity;
+    SpareOrder spareOrder = modelMapper.map(spareOrderReqDTO, SpareOrder.class);
+    
+    spareOrder.setCustomer(customer);
+    spareOrder.setSparepart(sparepart);
+    spareOrder.setAmount(totalAmount);
+    return spareOrderRepository.save(spareOrder);
+}
 
 
     @GetMapping("/spare-order")
@@ -77,6 +80,14 @@ public class SpareOrderController {
             spareOrderResDTO.setDistrict(spareOrder.getCustomer().getDistrict());
             spareOrderResDTO.setRegion(spareOrder.getCustomer().getRegion());
             spareOrderResDTO.setWard(spareOrder.getCustomer().getWard());
+            spareOrderResDTO.setPhonenumber(spareOrder.getCustomer().getPhonenumber());
+            
+            spareOrderResDTO.setSfirstname(spareOrder.getSparepart().getSeller().getFirstName());
+        spareOrderResDTO.setSlastname(spareOrder.getSparepart().getSeller().getLastName());
+        spareOrderResDTO.setSdistrict(spareOrder.getSparepart().getSeller().getDistrict());
+        spareOrderResDTO.setSregion(spareOrder.getSparepart().getSeller().getRegion());
+        spareOrderResDTO.setSward(spareOrder.getSparepart().getSeller().getWard());
+        spareOrderResDTO.setSphonenumber(spareOrder.getSparepart().getSeller().getPhonenumber());
 
             spareOrderResDTO.setPartId(spareOrder.getSparepart().getPartId());
             spareOrderResDTO.setPartPic(spareOrder.getSparepart().getPartPic());
@@ -85,7 +96,7 @@ public class SpareOrderController {
             spareOrderResDTO.setDescription(spareOrder.getSparepart().getDescription());
             spareOrderResDTO.setMotorModel(spareOrder.getSparepart().getMotorModel());
             spareOrderResDTO.setMotorMake(spareOrder.getSparepart().getMotorMake());
-
+            
             
 
              list.add(spareOrderResDTO);
@@ -107,6 +118,15 @@ public List<SpareOrderResDTO> viewSpareOrdersBySellerId(@PathVariable int seller
         spareOrderResDTO.setDistrict(spareOrder.getCustomer().getDistrict());
         spareOrderResDTO.setRegion(spareOrder.getCustomer().getRegion());
         spareOrderResDTO.setWard(spareOrder.getCustomer().getWard());
+        spareOrderResDTO.setPhonenumber(spareOrder.getCustomer().getPhonenumber());
+
+        spareOrderResDTO.setSfirstname(spareOrder.getSparepart().getSeller().getFirstName());
+        spareOrderResDTO.setSlastname(spareOrder.getSparepart().getSeller().getLastName());
+        spareOrderResDTO.setSdistrict(spareOrder.getSparepart().getSeller().getDistrict());
+        spareOrderResDTO.setSregion(spareOrder.getSparepart().getSeller().getRegion());
+        spareOrderResDTO.setSward(spareOrder.getSparepart().getSeller().getWard());
+        spareOrderResDTO.setSphonenumber(spareOrder.getSparepart().getSeller().getPhonenumber());
+
 
         spareOrderResDTO.setPartId(spareOrder.getSparepart().getPartId());
         spareOrderResDTO.setPartPic(spareOrder.getSparepart().getPartPic());
@@ -134,6 +154,15 @@ public List<SpareOrderResDTO> viewSpareOrdersByCustomerId(@PathVariable int cust
         spareOrderResDTO.setDistrict(spareOrder.getCustomer().getDistrict());
         spareOrderResDTO.setRegion(spareOrder.getCustomer().getRegion());
         spareOrderResDTO.setWard(spareOrder.getCustomer().getWard());
+        spareOrderResDTO.setPhonenumber(spareOrder.getCustomer().getPhonenumber());
+
+        spareOrderResDTO.setSfirstname(spareOrder.getSparepart().getSeller().getFirstName());
+        spareOrderResDTO.setSlastname(spareOrder.getSparepart().getSeller().getLastName());
+        spareOrderResDTO.setSdistrict(spareOrder.getSparepart().getSeller().getDistrict());
+        spareOrderResDTO.setSregion(spareOrder.getSparepart().getSeller().getRegion());
+        spareOrderResDTO.setSward(spareOrder.getSparepart().getSeller().getWard());
+        spareOrderResDTO.setSphonenumber(spareOrder.getSparepart().getSeller().getPhonenumber());
+
 
         spareOrderResDTO.setPartId(spareOrder.getSparepart().getPartId());
         spareOrderResDTO.setPartPic(spareOrder.getSparepart().getPartPic());
@@ -147,6 +176,29 @@ public List<SpareOrderResDTO> viewSpareOrdersByCustomerId(@PathVariable int cust
     }
     return list;
 }
+
+@GetMapping("/spare-order/count")
+public int countAllOrders(){
+    int count = spareOrderRepository.findAll().size();
+
+    return count;
+}
+
+@GetMapping("/spare-order/seller/count/{sellerId}")
+public int countSellerOrders(@PathVariable int sellerId){
+    int count = spareOrderRepository.getBySellerId(sellerId).size();
+
+    return count;
+}
+
+
+@GetMapping("/spare-order/customer/count/{customerId}")
+public int countCustomerOrders(@PathVariable int customerId){
+    int count = spareOrderRepository.getByCustomerId(customerId).size();
+
+    return count;
+}
+
 
    @DeleteMapping("/spare-order/{id}")
     public ResponseEntity<String> deleteSpareOrder(@PathVariable int id) {

@@ -7,7 +7,7 @@ public class SparepartResponseDTO {
     private int partId;
     private String partPic;
     private String partName;
-    private String price;
+    private long price;
     private String description;
     private String motorModel;
     private String motorMake;
@@ -19,5 +19,6 @@ public class SparepartResponseDTO {
     private String region;
     private String district;
     private String ward;
+
 
 }

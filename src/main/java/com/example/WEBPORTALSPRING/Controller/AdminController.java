@@ -1,5 +1,6 @@
 package com.example.WEBPORTALSPRING.Controller;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,23 +51,34 @@ public class AdminController {
     }
  //api ya kujaza data za admin
  @PostMapping("/admin")
- public Admin addAdmin(@RequestBody Admin admin){
-     return adminRepository.save(admin);
+    public Admin addAdmin(@RequestBody Admin admin){
+    // password encryption
+    String plainPassword = admin.getPassword();
+    String encryptedPassword = Base64.getEncoder().encodeToString(plainPassword.getBytes());
+    admin.setPassword(encryptedPassword); 
+    return adminRepository.save(admin);
  }
  
      @PutMapping("/admin/{id}")
     public ResponseEntity<?> updateAdmin(@PathVariable("id") int id, @RequestBody AdminRequestDTO adminDTO) {
         Admin findAdmin = adminRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid Id"));
+        
+        String plainPassword1 = adminDTO.getOldpassword();
+        String encryptedPassword1 = Base64.getEncoder().encodeToString(plainPassword1.getBytes());
 
         // Check if the provided old password matches the current password
-        if (!findAdmin.getPassword().matches(adminDTO.getOldpassword())) {
+        if (!findAdmin.getPassword().matches(encryptedPassword1)) {
             throw new IllegalArgumentException("Incorrect old password");
         }
 
         // Perform data mapping using ModelMapper
         modelMapper.map(adminDTO, findAdmin);
 
+        String plainPassword2 = findAdmin.getPassword();
+        String encryptedPassword2 = Base64.getEncoder().encodeToString(plainPassword2.getBytes());
+
+        findAdmin.setPassword(encryptedPassword2);
         Admin updatedAdmin = adminRepository.save(findAdmin);
         return ResponseEntity.ok(updatedAdmin);
     }
@@ -85,7 +97,13 @@ public class AdminController {
      @PostMapping("/admin/login")
      public ResponseEntity<?> adminLogin(@RequestBody Admin admin){
         Admin admin1 = adminRepository.getAdminByEmail(admin.getEmail());
-        if(admin1.getPassword().equals(admin.getPassword())){
+
+        // encrypting plain login password
+        String plainPassword = admin.getPassword();
+        String encryptedPassword = Base64.getEncoder().encodeToString(plainPassword.getBytes());
+        
+        // checking encrypted login password Comparing with encrypted existing password
+        if(admin1.getPassword().equals(encryptedPassword)){
             return ResponseEntity.ok(admin1);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

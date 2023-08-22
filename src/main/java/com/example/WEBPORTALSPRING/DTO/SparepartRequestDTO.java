@@ -8,7 +8,7 @@ public class SparepartRequestDTO {
         private int partId;
         private String partPic;
         private String partName;
-        private String price;
+        private long price;
         private String description;
         private String motorModel;
         private String motorMake;

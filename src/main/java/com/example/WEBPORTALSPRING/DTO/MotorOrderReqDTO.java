@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class MotorOrderReq {
+public class MotorOrderReqDTO {
 
     private int motorOrderId;
 

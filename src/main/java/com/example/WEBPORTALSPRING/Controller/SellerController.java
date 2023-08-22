@@ -1,5 +1,6 @@
 package com.example.WEBPORTALSPRING.Controller;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,11 @@ public class SellerController {
     //api ya kujaza data za seller
     @PostMapping("/seller")
     public Seller addSeller(@RequestBody Seller seller){
+
+         String plainPassword = seller.getPassword();
+    String encryptedPassword = Base64.getEncoder().encodeToString(plainPassword.getBytes());
+    seller.setPassword(encryptedPassword); 
+
         return sellerRepository.save(seller);
     }
 
@@ -61,13 +67,20 @@ public class SellerController {
         Seller findSeller = sellerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid Id"));
 
+                String plainPassword1 = sellerDTO.getPassword();
+                String encryptedPassword1 = Base64.getEncoder().encodeToString(plainPassword1.getBytes());
+
         // Check if the provided old password matches the current password
-        if (!findSeller.getPassword().matches(sellerDTO.getOldPassword())) {
+        if (!findSeller.getPassword().matches(encryptedPassword1)) {
             throw new IllegalArgumentException("Incorrect old password");
         }
 
         // Perform data mapping using ModelMapper
         modelMapper.map(sellerDTO, findSeller);
+
+        String plainPassword2 = findSeller.getPassword();
+        String encryptedPassword2 = Base64.getEncoder().encodeToString(plainPassword2.getBytes());
+        findSeller.setPassword(encryptedPassword2); 
 
         Seller updatedSeller = sellerRepository.save(findSeller);
         return ResponseEntity.ok(updatedSeller);
@@ -88,7 +101,11 @@ public class SellerController {
     @PostMapping("/seller/login")
     public ResponseEntity<?> sellerLogin(@RequestBody Seller seller){
         Seller seller1 = sellerRepository.getSellerByEmail(seller.getEmail());
-        if(seller1.getPassword().equals(seller.getPassword())){
+
+        String plainPassword = seller.getPassword();
+        String encryptedPassword = Base64.getEncoder().encodeToString(plainPassword.getBytes());
+        
+        if(seller1.getPassword().equals(encryptedPassword)){
             return ResponseEntity.ok(seller1);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

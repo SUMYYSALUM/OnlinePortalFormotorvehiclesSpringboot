@@ -1,5 +1,6 @@
 package com.example.WEBPORTALSPRING.Controller;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,10 @@ public class CustomerController {
     //api ya kujaza data za seller
     @PostMapping("/customer")
     public Customer addCustomers(@RequestBody Customer customer){
+
+    String plainPassword = customer.getPassword();
+    String encryptedPassword = Base64.getEncoder().encodeToString(plainPassword.getBytes());
+    customer.setPassword(encryptedPassword); 
         return customerRepository.save(customer);
     }
 
@@ -63,7 +68,6 @@ public class CustomerController {
             findCustomer.setFirstname(customer.getFirstname());
             findCustomer.setLastname(customer.getLastname());
             findCustomer.setPhonenumber(customer.getPhonenumber());
-            findCustomer.setPassword(customer.getPassword());
             findCustomer.setRegion(customer.getRegion());
             findCustomer.setDistrict(customer.getDistrict());
             findCustomer.setWard(customer.getWard());
@@ -88,7 +92,11 @@ public class CustomerController {
     @PostMapping("/customer/login")
     public ResponseEntity<?> customerLogin(@RequestBody Customer customer){
         Customer customer1 = customerRepository.getCustomerByEmail(customer.getEmail());
-        if(customer1.getPassword().equals(customer.getPassword())){
+        
+        String plainPassword = customer.getPassword();
+        String encryptedPassword = Base64.getEncoder().encodeToString(plainPassword.getBytes());
+
+        if(customer1.getPassword().equals(encryptedPassword)){
             return ResponseEntity.ok(customer1);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

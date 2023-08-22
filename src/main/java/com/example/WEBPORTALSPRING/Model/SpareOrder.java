@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.example.WEBPORTALSPRING.DTO.MotorOrderReq;
+import com.example.WEBPORTALSPRING.DTO.MotorOrderReqDTO;
 
 import lombok.Data;
 

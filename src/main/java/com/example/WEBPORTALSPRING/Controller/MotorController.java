@@ -106,6 +106,7 @@ public class MotorController {
             findMotor.setMotorMileage(motor.getMotorMileage());
             findMotor.setMotorMade(motor.getMotorMade());
             findMotor.setReleaseYear(motor.getReleaseYear());
+            findMotor.setMotorName(motor.getMotorName());
 
             Motor motor2 = motorRepository.save(findMotor);
             return ResponseEntity.ok(motor2);

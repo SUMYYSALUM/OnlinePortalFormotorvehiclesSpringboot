@@ -22,7 +22,7 @@ public class MotorOrderResDTO {
     private String fuelType;
     private String transmissionType;
     private String motorCondition;
-    private String motorPrice;
+    private long motorPrice;
 
     private int customerId;
     private String firstname;
@@ -30,5 +30,15 @@ public class MotorOrderResDTO {
     private String region;
     private String district;
     private String ward;
+    private String phonenumber;
+
+    private int sellerId;
+    private String Sfirstname;
+    private String Slastname;
+    private String Sregion;
+    private String Sdistrict;
+    private String Sward;
+    private String Sphonenumber;
+
     
 }

@@ -13,7 +13,7 @@ public class MotorResponseDTO {
     private String fuelType;
     private String transmissionType;
     private String motorCondition;
-    private String motorPrice;
+    private long motorPrice;
     private String motorMileage;
     private String motorMade;
     private String motorModel;

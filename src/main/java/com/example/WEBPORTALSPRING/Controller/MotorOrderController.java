@@ -1,11 +1,13 @@
 package com.example.WEBPORTALSPRING.Controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.WEBPORTALSPRING.DTO.MotorOrderReq;
+import com.example.WEBPORTALSPRING.DTO.MotorOrderReqDTO;
 import com.example.WEBPORTALSPRING.DTO.MotorOrderResDTO;
 import com.example.WEBPORTALSPRING.DTO.MotorResponseDTO;
 import com.example.WEBPORTALSPRING.DTO.SparepartRequestDTO;
@@ -47,21 +49,27 @@ public class MotorOrderController {
     private ModelMapper modelMapper;
 
     @PostMapping("/motor-order")
-    public MotorOrder makeMotorOrder(@RequestBody MotorOrderReq motorOrderReq) {
+public MotorOrder makeMotorOrder(@RequestBody MotorOrderReqDTO motorOrderReqDTO) {
+    Customer customer = new Customer();
+    customer.setCustomerId(motorOrderReqDTO.getCustomerId());
 
-        Customer customer = new Customer();
-        customer.setCustomerId(motorOrderReq.getCustomerId());
+    Motor motor = motorRepository.findById(motorOrderReqDTO.getMotorId())
+            .orElseThrow(() -> new IllegalArgumentException("Motor not found"));
 
-        Motor motor = new Motor();
-        motor.setMotorId(motorOrderReq.getMotorId());
+    long motorPrice = motor.getMotorPrice();
+    long quantity = motorOrderReqDTO.getQuantity();
 
-        MotorOrder motorOrder = modelMapper.map(motorOrderReq, MotorOrder.class);
+    long totalAmount = motorPrice * quantity;
+    MotorOrder motorOrder = modelMapper.map(motorOrderReqDTO, MotorOrder.class);
+    
+    motorOrder.setCustomer(customer);
+    motorOrder.setMotor(motor);
+    motorOrder.setAmount(totalAmount);
+    return motorOrderRepository.save(motorOrder);
+}
 
-        motorOrder.setCustomer(customer);
-        motorOrder.setMotor(motor);
 
-        return motorOrderRepository.save(motorOrder);
-    }
+
 
     @GetMapping("/motor-order")
 public List<MotorOrderResDTO> viewMotorOrders(){
@@ -75,6 +83,15 @@ public List<MotorOrderResDTO> viewMotorOrders(){
         motorOrderResDTO.setDistrict(motorOrder.getCustomer().getDistrict());
         motorOrderResDTO.setRegion(motorOrder.getCustomer().getRegion());
         motorOrderResDTO.setWard(motorOrder.getCustomer().getWard());
+        motorOrderResDTO.setPhonenumber(motorOrder.getCustomer().getPhonenumber());
+ 
+        motorOrderResDTO.setSfirstname(motorOrder.getMotor().getSeller().getFirstName());
+        motorOrderResDTO.setSlastname(motorOrder.getMotor().getSeller().getLastName());
+        motorOrderResDTO.setSdistrict(motorOrder.getMotor().getSeller().getDistrict());
+        motorOrderResDTO.setSregion(motorOrder.getMotor().getSeller().getRegion());
+        motorOrderResDTO.setSward(motorOrder.getMotor().getSeller().getWard());
+        motorOrderResDTO.setSphonenumber(motorOrder.getMotor().getSeller().getPhonenumber());
+
 
         motorOrderResDTO.setMotorPic(motorOrder.getMotor().getMotorPic());
         motorOrderResDTO.setMotorName(motorOrder.getMotor().getMotorName());
@@ -104,6 +121,14 @@ public List<MotorOrderResDTO> viewMotorOrdersByCustomerId(@PathVariable int cust
         motorOrderResDTO.setDistrict(motorOrder.getCustomer().getDistrict());
         motorOrderResDTO.setRegion(motorOrder.getCustomer().getRegion());
         motorOrderResDTO.setWard(motorOrder.getCustomer().getWard());
+        motorOrderResDTO.setPhonenumber(motorOrder.getCustomer().getPhonenumber());
+
+        motorOrderResDTO.setSfirstname(motorOrder.getMotor().getSeller().getFirstName());
+        motorOrderResDTO.setSlastname(motorOrder.getMotor().getSeller().getLastName());
+        motorOrderResDTO.setSdistrict(motorOrder.getMotor().getSeller().getDistrict());
+        motorOrderResDTO.setSregion(motorOrder.getMotor().getSeller().getRegion());
+        motorOrderResDTO.setSward(motorOrder.getMotor().getSeller().getWard());
+        motorOrderResDTO.setSphonenumber(motorOrder.getMotor().getSeller().getPhonenumber());
 
         motorOrderResDTO.setMotorPic(motorOrder.getMotor().getMotorPic());
         motorOrderResDTO.setMotorName(motorOrder.getMotor().getMotorName());
@@ -133,6 +158,16 @@ public List<MotorOrderResDTO> viewMotorOrdersBySellerId(@PathVariable int seller
         motorOrderResDTO.setDistrict(motorOrder.getCustomer().getDistrict());
         motorOrderResDTO.setRegion(motorOrder.getCustomer().getRegion());
         motorOrderResDTO.setWard(motorOrder.getCustomer().getWard());
+        motorOrderResDTO.setPhonenumber(motorOrder.getCustomer().getPhonenumber());
+
+
+        motorOrderResDTO.setSfirstname(motorOrder.getMotor().getSeller().getFirstName());
+        motorOrderResDTO.setSlastname(motorOrder.getMotor().getSeller().getLastName());
+        motorOrderResDTO.setSdistrict(motorOrder.getMotor().getSeller().getDistrict());
+        motorOrderResDTO.setSregion(motorOrder.getMotor().getSeller().getRegion());
+        motorOrderResDTO.setSward(motorOrder.getMotor().getSeller().getWard());
+        motorOrderResDTO.setSphonenumber(motorOrder.getMotor().getSeller().getPhonenumber());
+
 
         motorOrderResDTO.setMotorPic(motorOrder.getMotor().getMotorPic());
         motorOrderResDTO.setMotorName(motorOrder.getMotor().getMotorName());
@@ -151,13 +186,36 @@ public List<MotorOrderResDTO> viewMotorOrdersBySellerId(@PathVariable int seller
 
 
     @DeleteMapping("/motor-order/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMotorOrder(@PathVariable int id) {
+    public ResponseEntity<String> deleteMotorOrder(@PathVariable int id) {
         MotorOrder motorOrder = motorOrderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Motor Order not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Spare Order not found"));
 
         motorOrderRepository.delete(motorOrder);
+
+        return ResponseEntity.ok("Motor Order with ID " + id + " has been successfully deleted.");
     }
+
+    @GetMapping("/motor-order/count")
+public int countAllOrders(){
+    int count = motorOrderRepository.findAll().size();
+
+    return count;
+}
+
+@GetMapping("/motor-order/seller/count/{sellerId}")
+public int countSellerOrders(@PathVariable int sellerId){
+    int count = motorOrderRepository.getBySellerId(sellerId).size();
+
+    return count;
+}
+
+
+@GetMapping("/motor-order/customer/count/{customerId}")
+public int countCustomerOrders(@PathVariable int customerId){
+    int count = motorOrderRepository.getByCustomerId(customerId).size();
+
+    return count;
+}
 
 
 

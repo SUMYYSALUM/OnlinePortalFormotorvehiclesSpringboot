@@ -16,7 +16,7 @@ public class SpareOrderResDTO {
     private int partId;
     private String partPic;
     private String partName;
-    private String price;
+    private long price;
     private String description;
     private String motorModel;
     private String motorMake;
@@ -27,6 +27,16 @@ public class SpareOrderResDTO {
     private String region;
     private String district;
     private String ward;
+    private String phonenumber;
+
+    private int sellerId;
+    private String Sfirstname;
+    private String Slastname;
+    private String Sregion;
+    private String Sdistrict;
+    private String Sward;
+    private String Sphonenumber;
+
     
     
 }
